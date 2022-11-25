@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import it.prova.gestionetratte.model.Airbus;
 import it.prova.gestionetratte.repository.airbus.AirbusRepository;
+import it.prova.gestionetratte.web.api.exception.AirbusNotFoundException;
 
 public class AirbusServiceImpl implements AirbusService {
 	
@@ -15,43 +16,51 @@ public class AirbusServiceImpl implements AirbusService {
 	@Override
 	public List<Airbus> listAllElements(boolean eager) {
 		// TODO Auto-generated method stub
-		return null;
+		return (List<Airbus>) repository.findAll();
 	}
 
 	@Override
 	public Airbus caricaSingoloElemento(Long id) {
 		// TODO Auto-generated method stub
-		return null;
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
 	public Airbus caricaSingoloElementoEager(Long id) {
 		// TODO Auto-generated method stub
-		return null;
+		return repository.findByIdEager(id);
 	}
 
 	@Override
 	public Airbus aggiorna(Airbus airbusInstance) {
 		// TODO Auto-generated method stub
-		return null;
+		return repository.save(airbusInstance);
 	}
 
 	@Override
 	public Airbus inserisciNuovo(Airbus airbusInstance) {
 		// TODO Auto-generated method stub
-		return null;
+		return repository.save(airbusInstance);
 	}
 
 	@Override
 	public void rimuovi(Long idToRemove) {
 		// TODO Auto-generated method stub
-		
+		repository.findById(idToRemove).orElseThrow(
+				() -> new AirbusNotFoundException("Airbus not found con id: " + idToRemove));
+		repository.deleteById(idToRemove);
 	}
 
 	@Override
 	public List<Airbus> findByExample(Airbus example) {
 		// TODO Auto-generated method stub
-		return null;
+		return repository.findByExample(example);
+	}
+
+	@Override
+	public Airbus findByCodiceAndDescrizione(String codice, String descrizione) {
+		// TODO Auto-generated method stub
+		return repository.findByCodiceAndDescrizione(codice,descrizione);
 	}
 
 }

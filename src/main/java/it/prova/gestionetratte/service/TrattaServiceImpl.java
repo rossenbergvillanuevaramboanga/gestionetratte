@@ -61,4 +61,10 @@ public class TrattaServiceImpl implements TrattaService {
 		return repository.findByExample(example);
 	}
 
+	@Override
+	public List<Tratta> findByCodiceAndDescrizione(String codice, String descrizione) {
+		// TODO Auto-generated method stub
+		return repository.findByCodiceAndDescrizione(codice,descrizione);
+	}
+
 }
