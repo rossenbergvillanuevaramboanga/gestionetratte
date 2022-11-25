@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "airbus")
@@ -33,6 +34,7 @@ public class Airbus {
 	private LocalDate dataInizioServizio;
 	
 	@Column(name = "numeropasseggeri")
+	@Min(1)
 	private Integer numeroPasseggeri;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "airbus")
