@@ -1,9 +1,14 @@
 package it.prova.gestionetratte.service;
 
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+
+import it.prova.gestionetratte.model.Stato;
 import it.prova.gestionetratte.model.Tratta;
 import it.prova.gestionetratte.repository.tratta.TrattaRepository;
 import it.prova.gestionetratte.web.api.exception.TrattaNotFoundException;
@@ -61,10 +66,18 @@ public class TrattaServiceImpl implements TrattaService {
 		return repository.findByExample(example);
 	}
 
-	@Override
+	@Override 
 	public List<Tratta> findByCodiceAndDescrizione(String codice, String descrizione) {
 		// TODO Auto-generated method stub
 		return repository.findByCodiceAndDescrizione(codice,descrizione);
+	}
+
+	@Override
+	public void concludiTratte() {
+		// TODO Auto-generated method stub
+		List<Tratta> tratteDaConcludere = repository.findByStatoAndOraAtterraggioBefore(Stato.ATTIVA , LocalTime.now());
+		tratteDaConcludere.stream().forEach(e -> { e.setStato(Stato.CONCLUSA); repository.save(e);});
+		
 	}
 
 }
