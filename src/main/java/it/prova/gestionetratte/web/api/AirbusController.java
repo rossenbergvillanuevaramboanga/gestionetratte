@@ -1,11 +1,14 @@
 package it.prova.gestionetratte.web.api;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,6 +75,31 @@ public class AirbusController {
 	@PostMapping("/search")
 	public List<AirbusDTO> search(@RequestBody AirbusDTO example){
 		return AirbusDTO.createAirbusDTOListFromModelList(airbusService.findByExample(example.buildAirbusModel()), false); 
+	}
+	
+	@GetMapping("/listaAirbusEvidenziandoSovrapposizioni")
+	public ResponseEntity<Object> listaAirbusEvidenziandoSovrapposizioni(){
+		
+		List<Airbus> airbus = airbusService.listAllElements(true);
+		Map<String, Object> body = new LinkedHashMap<>();
+		
+		airbus.stream().forEach( a -> 
+
+		{
+			body.put("id", a.getId());
+			body.put("codice", a.getCodice());
+			body.put("descrizione", a.getDescrizione());
+			body.put("dataInizioServizio", a.getDataInizioServizio());
+			body.put("numeroPasseggeri", a.getNumeroPasseggeri());
+			
+			if(a.getTratte().stream().anyMatch( tratta -> tratta.getOraAtterraggio().isAfter(tratta.getOraDecollo())))
+				body.put("conSovrapposizioni", true);
+	
+		});
+		
+	
+		return new ResponseEntity<>(body, HttpStatus.OK);
+		
 	}
 	
 	
