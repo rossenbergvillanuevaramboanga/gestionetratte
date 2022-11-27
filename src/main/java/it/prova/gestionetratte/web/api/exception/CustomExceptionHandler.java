@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-public class CustomExceptionHandler extends ResponseEntityExceptionHandler  {
-	
+public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -32,8 +32,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler  {
 
 		return new ResponseEntity<>(body, headers, status);
 	}
-	
-	//TrattaNotFoundException
+
+	// TrattaNotFoundException
 	@ExceptionHandler(TrattaNotFoundException.class)
 	public ResponseEntity<Object> handleTrattaNotFoundException(TrattaNotFoundException ex, WebRequest request) {
 
@@ -44,8 +44,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler  {
 
 		return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
 	}
-	
-	//AirbusNotFoundException
+
+	// AirbusNotFoundException
 	@ExceptionHandler(AirbusNotFoundException.class)
 	public ResponseEntity<Object> handleAirbusNotFoundException(AirbusNotFoundException ex, WebRequest request) {
 
@@ -54,10 +54,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler  {
 		body.put("message", ex.getMessage());
 		body.put("status", HttpStatus.NOT_FOUND);
 
-		return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);	
+		return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
 	}
-	
-	//IdNotNullForInsertException
+
+	// IdNotNullForInsertException
 	@ExceptionHandler(IdNotNullForInsertException.class)
 	public ResponseEntity<Object> handleIdNotNullForInsertException(IdNotNullForInsertException ex,
 			WebRequest request) {
@@ -69,9 +69,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler  {
 
 		return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_ENTITY);
 	}
-	
-	
-	
-	
+
+	// AirbusWithTratteException
+	@ExceptionHandler(AirbusWithTratteException.class)
+	public ResponseEntity<Object> handleAirbusWithTratteException(AirbusWithTratteException ex,
+			WebRequest request) {
+
+		Map<String, Object> body = new LinkedHashMap<>();
+		body.put("timestamp", LocalDateTime.now());
+		body.put("message", ex.getMessage());
+		body.put("status", HttpStatus.UNPROCESSABLE_ENTITY);
+
+		return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
 
 }

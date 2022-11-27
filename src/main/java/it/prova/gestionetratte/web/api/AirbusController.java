@@ -1,14 +1,13 @@
 package it.prova.gestionetratte.web.api;
 
-import java.util.LinkedHashMap;
+
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import it.prova.gestionetratte.dto.AirbusDTO;
 import it.prova.gestionetratte.model.Airbus;
 import it.prova.gestionetratte.service.AirbusService;
 import it.prova.gestionetratte.web.api.exception.AirbusNotFoundException;
+import it.prova.gestionetratte.web.api.exception.AirbusWithTratteException;
 import it.prova.gestionetratte.web.api.exception.IdNotNullForInsertException;
 
 @RestController
@@ -31,6 +35,9 @@ public class AirbusController {
 	
 	@Autowired
 	private AirbusService airbusService;
+	
+	@Autowired
+	private ObjectMapper mapper;
 	
 	@GetMapping
 	public List<AirbusDTO> getAll(){
@@ -68,6 +75,9 @@ public class AirbusController {
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable(required = true) Long id) {
+		
+		Airbus airbus = airbusService.caricaSingoloElemento(id);
+		if(!airbus.getTratte().isEmpty()) throw new AirbusWithTratteException("Airbus has Tratte");
 		airbusService.rimuovi(id);
 		
 	}
@@ -78,27 +88,22 @@ public class AirbusController {
 	}
 	
 	@GetMapping("/listaAirbusEvidenziandoSovrapposizioni")
-	public ResponseEntity<Object> listaAirbusEvidenziandoSovrapposizioni(){
-		
-		List<Airbus> airbus = airbusService.listAllElements(true);
-		Map<String, Object> body = new LinkedHashMap<>();
-		
-		airbus.stream().forEach( a -> 
+	public List<AirbusDTO> listaAirbusEvidenziandoSovrapposizioni(){
 
-		{
-			body.put("id", a.getId());
-			body.put("codice", a.getCodice());
-			body.put("descrizione", a.getDescrizione());
-			body.put("dataInizioServizio", a.getDataInizioServizio());
-			body.put("numeroPasseggeri", a.getNumeroPasseggeri());
-			
-			if(a.getTratte().stream().anyMatch( tratta -> tratta.getOraAtterraggio().isAfter(tratta.getOraDecollo())))
-				body.put("conSovrapposizioni", true);
-	
-		});
 		
+		List<AirbusDTO> airbus = AirbusDTO.createAirbusDTOListFromModelList(airbusService.listAllElements(true), true);
 	
-		return new ResponseEntity<>(body, HttpStatus.OK);
+		
+		airbus = airbus.stream().map( a -> {
+			if(a.containsSovrapposizioni()) {
+				a.setConSovrapposizioni(true);
+			}
+			a.setTratte(null);
+			return a;
+			
+		}).collect(Collectors.toList());
+		
+		return airbus;
 		
 	}
 	

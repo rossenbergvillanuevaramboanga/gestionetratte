@@ -36,7 +36,7 @@ public class GestionetratteApplication implements CommandLineRunner {
 		// tratte)
 		String codiceEmirates = "AB2345E";
 		String descrizioneEmirates = "Emirates";
-		LocalDate dataInizioServizioEmirates = LocalDate.parse("18/12/1946", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		LocalDate dataInizioServizioEmirates = LocalDate.parse("18-12-1946", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		Integer numeroPasseggeriEmirates = 800;
 
 		Airbus airbusEmirates = airbusService.findByCodiceAndDescrizione(codiceEmirates, descrizioneEmirates);
@@ -49,7 +49,7 @@ public class GestionetratteApplication implements CommandLineRunner {
 
 		// Creazione Tratta
 		Tratta trattaMilanoNapoli = new Tratta("HJKGJ678", "Milano-Napoli",
-				LocalDate.parse("18/12/1946", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+				LocalDate.parse("18-12-1946", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
 				LocalTime.parse("10:30:35"), LocalTime.parse("22:30:35"), Stato.ATTIVA,
 				airbusEmirates);
 		if (trattaService
@@ -62,7 +62,7 @@ public class GestionetratteApplication implements CommandLineRunner {
 		// tratte)
 		String codiceIta = "AB5872I";
 		String descrizioneIta = "ItaAirways";
-		LocalDate dataInizioServizioIta = LocalDate.parse("20/12/2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		LocalDate dataInizioServizioIta = LocalDate.parse("20-12-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		Integer numeroPasseggeriIta = 600;
 
 		Airbus airbusIta = airbusService.findByCodiceAndDescrizione(codiceIta, descrizioneIta);
@@ -74,13 +74,25 @@ public class GestionetratteApplication implements CommandLineRunner {
 
 		// Creazione Tratta
 		Tratta trattaRomaLondra = new Tratta("KKOOP67", "Roma-Londra",
-				LocalDate.parse("20/12/2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-				LocalTime.parse("9:30:35"), LocalTime.parse("13:30:35"), Stato.ATTIVA,
+				LocalDate.parse("20-12-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+				LocalTime.parse("09:30:35"), LocalTime.parse("13:30:35"), Stato.ATTIVA,
 				airbusIta);
 		if (trattaService
 				.findByCodiceAndDescrizione(trattaRomaLondra.getCodice(), trattaRomaLondra.getDescrizione())
 				.isEmpty())
 			trattaService.inserisciNuovo(trattaRomaLondra);
+		
+		Tratta trattaRomaParigi = new Tratta("DR3928R", "Roma-Parigi",
+				LocalDate.parse("20-12-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+				LocalTime.parse("11:30:35"), LocalTime.parse("19:30:35"), Stato.ATTIVA,
+				airbusIta);
+		if (trattaService
+				.findByCodiceAndDescrizione(trattaRomaParigi.getCodice(), trattaRomaParigi.getDescrizione())
+				.isEmpty())
+			trattaService.inserisciNuovo(trattaRomaParigi);
+		
+		
+		
 
 	}
 

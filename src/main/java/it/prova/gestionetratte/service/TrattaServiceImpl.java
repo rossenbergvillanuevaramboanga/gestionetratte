@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
@@ -13,6 +14,7 @@ import it.prova.gestionetratte.model.Tratta;
 import it.prova.gestionetratte.repository.tratta.TrattaRepository;
 import it.prova.gestionetratte.web.api.exception.TrattaNotFoundException;
 
+@Service
 public class TrattaServiceImpl implements TrattaService {
 	
 	@Autowired

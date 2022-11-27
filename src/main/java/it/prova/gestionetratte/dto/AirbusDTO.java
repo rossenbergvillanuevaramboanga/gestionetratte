@@ -10,11 +10,15 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 
 import it.prova.gestionetratte.model.Airbus;
 import it.prova.gestionetratte.model.Tratta;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonAppend(prepend = true, attrs = {@JsonAppend.Attr("conSovrapposizioni") })
+@JsonAppend(attrs = { @JsonAppend.Attr(value = "conSovrapposizioni") })
 public class AirbusDTO {
 
 	private Long id;
@@ -33,6 +37,10 @@ public class AirbusDTO {
 
 	@JsonIgnoreProperties(value = { "airbus" })
 	private Set<TrattaDTO> tratte = new HashSet<TrattaDTO>(0);
+	
+	private Boolean conSovrapposizioni;
+	
+	
 
 	public AirbusDTO() {
 		// TODO Auto-generated constructor stub
@@ -100,6 +108,15 @@ public class AirbusDTO {
 	public void setTratte(Set<TrattaDTO> tratte) {
 		this.tratte = tratte;
 	}
+	
+	
+	public Boolean getConSovrapposizioni() {
+		return conSovrapposizioni;
+	}
+
+	public void setConSovrapposizioni(Boolean conSovrapposizioni) {
+		this.conSovrapposizioni = conSovrapposizioni;
+	}
 
 	public Airbus buildAirbusModel() {
 		return new Airbus(this.id, this.codice, this.descrizione, this.dataInizioServizio, this.numeroPasseggeri);
@@ -110,12 +127,11 @@ public class AirbusDTO {
 				airbusModel.getDataInizioServizio(), airbusModel.getNumeroPasseggeri());
 		if (includeTratte)
 			result.setTratte(TrattaDTO.createTrattaDTOSetFromModelSet(airbusModel.getTratte(), false));
-		return null;
+		return result;
 	}
 
 	public static List<AirbusDTO> createAirbusDTOListFromModelList(List<Airbus> modelListInput, boolean includeTratte) {
 		return modelListInput.stream().map(
-
 				airbusEntity -> {
 					AirbusDTO result = AirbusDTO.buildAirbusDTOFromModel(airbusEntity, includeTratte);
 					if (includeTratte)
@@ -124,5 +140,23 @@ public class AirbusDTO {
 				}).collect(Collectors.toList());
 
 	}
+	
+	//@JsonProperty("conSovrapposizioni")
+	public boolean containsSovrapposizioni() {
+		
+		for (TrattaDTO tratta1 : tratte) {
+			for (TrattaDTO tratta2 : tratte) {
+				if(tratta1.getId() != tratta2.getId() && 
+						tratta1.getData().equals(tratta2.getData()) && 
+						tratta1.getOraAtterraggio().isAfter(tratta2.getOraDecollo())) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	
 
 }
